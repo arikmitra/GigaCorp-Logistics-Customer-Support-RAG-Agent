@@ -274,9 +274,9 @@ with st.sidebar:
 
 # ngrok is only used because agent was tested in kaggle
 #!pip install -q pyngrok
-from pyngrok import ngrok
-ngrok_token = UserSecretsClient().get_secret("NGROK_TOKEN")
-ngrok.set_auth_token(ngrok_token) # free at ngrok.com
-public_url = ngrok.connect(8501)
-print(public_url)
-get_ipython().system_raw("streamlit run app.py &")        
+#from pyngrok import ngrok
+#ngrok_token = UserSecretsClient().get_secret("NGROK_TOKEN")
+#ngrok.set_auth_token(ngrok_token) # free at ngrok.com
+#public_url = ngrok.connect(8501)
+#print(public_url)
+#get_ipython().system_raw("streamlit run app.py &")        
