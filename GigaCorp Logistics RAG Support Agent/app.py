@@ -1,6 +1,6 @@
 ## Writefile is used only for testing in kaggle
 
-%%writefile app.py
+# %%writefile app.py
 """
 GigaCorp Customer Support RAG Agent
 ------------------------------------
