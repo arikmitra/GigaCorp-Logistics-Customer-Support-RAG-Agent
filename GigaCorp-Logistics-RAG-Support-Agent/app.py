@@ -267,7 +267,7 @@ with st.sidebar:
         st.session_state.messages = []
         st.rerun()
         
-        
+# Only for kaggle testing        
 # import os
 # os._exit(0)  # restarts the kernel; rerun cells after
 
