@@ -47,7 +47,7 @@ def _resolve_data_path() -> Path:
     return Path(__file__).parent / "data" / "gigacorp_faq_final.txt"
 
 
-DATA_PATH = resolve_data_path()
+DATA_PATH = _resolve_data_path()
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"  # free, local, no API key needed
 LLM_MODEL = "gemini-3.5-flash"  # free-tier Gemini model
 TOP_K = 4
