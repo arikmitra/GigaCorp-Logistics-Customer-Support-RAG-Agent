@@ -21,7 +21,7 @@ the vector store, and Streamlit Community Cloud for hosting.
 import os
 import re
 from pathlib import Path
-from kaggle_secrets import UserSecretsClient
+# from kaggle_secrets import UserSecretsClient
 
 import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -36,7 +36,18 @@ from pydantic import BaseModel, Field
 # --------------------------------------------------------------------------
 # Config
 # --------------------------------------------------------------------------
-DATA_PATH = Path("GigaCorp-Logistics-RAG-Support-Agent/data/gigacorp_faq_final.txt")
+def _resolve_data_path() -> Path:
+    """Auto-detect Kaggle vs. local/Streamlit Cloud deployment."""
+    kaggle_path = Path(
+        "/kaggle/input/GigaCorp-Logistics-RAG-Support-Agent/data/gigacorp_faq_final.txt"
+    )
+    if kaggle_path.exists():
+        return kaggle_path
+    # Local / Streamlit Cloud: file lives alongside app.py in the repo
+    return Path(__file__).parent / "data" / "gigacorp_faq_final.txt"
+
+
+DATA_PATH = resolve_data_path()
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"  # free, local, no API key needed
 LLM_MODEL = "gemini-3.5-flash"  # free-tier Gemini model
 TOP_K = 4
@@ -100,7 +111,36 @@ def get_retriever():
     vs = build_vectorstore()
     return vs.as_retriever(search_kwargs={"k": TOP_K})
 
-os.environ["GOOGLE_API_KEY"] = UserSecretsClient().get_secret("GOOGLE_API_KEY")
+# os.environ["GOOGLE_API_KEY"] = UserSecretsClient().get_secret("GOOGLE_API_KEY") #only for kaggle
+
+def _load_google_api_key():
+    """
+    Resolve GOOGLE_API_KEY from, in order:
+      1. An already-set environment variable (e.g. local `export` or Kaggle
+         Secrets, if the caller set it before this module is imported).
+      2. Streamlit Cloud's native `st.secrets` store (Settings -> Secrets).
+    Never raises at import time — missing key is handled later in get_llm()
+    so the rest of the app (and Streamlit's own error UI) still loads.
+    """
+    key = os.environ.get("GOOGLE_API_KEY")
+    if key:
+        return key
+ 
+    try:
+        key = st.secrets.get("GOOGLE_API_KEY")
+    except Exception:
+        # st.secrets raises if no secrets.toml / Secrets panel is configured
+        # at all (e.g. fresh local clone with no .env) - treat as "no key".
+        key = None
+ 
+    if key:
+        os.environ["GOOGLE_API_KEY"] = key
+    return key
+ 
+ 
+_load_google_api_key()
+
+
 # --------------------------------------------------------------------------
 # LLM chains
 # --------------------------------------------------------------------------
@@ -109,9 +149,13 @@ def get_llm():
     if not api_key:
         st.error(
             "Missing GOOGLE_API_KEY. Get a free key at "
-            "https://aistudio.google.com/apikey and set it as an "
-            "environment variable or Streamlit secret before running the app."
+            "https://aistudio.google.com/apikey, then set it either as a "
+            "local environment variable (`export GOOGLE_API_KEY=...`) or, "
+            "on Streamlit Community Cloud, under your app's "
+            "**Settings -> Secrets** panel as:\n\n"
+            '```\nGOOGLE_API_KEY = "your-key-here"\n```'
         )
+
         st.stop()
     return ChatGoogleGenerativeAI(model=LLM_MODEL, temperature=0, google_api_key=api_key)
 
