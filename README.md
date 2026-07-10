@@ -1,5 +1,8 @@
 # GigaCorp Customer Support RAG Agent
 
+[Check the App here](https://gigacorp-logistics-customer-support-rag-agent-7vygynfutjgdgkau.streamlit.app/)
+
+
 A Streamlit chat app that answers customer questions about a fictional
 company ("GigaCorp") using Retrieval-Augmented Generation over a local FAQ
 file, and remembers earlier turns in the conversation so follow-up
