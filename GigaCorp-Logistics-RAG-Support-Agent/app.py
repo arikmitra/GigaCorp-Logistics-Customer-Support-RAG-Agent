@@ -36,7 +36,7 @@ from pydantic import BaseModel, Field
 # --------------------------------------------------------------------------
 # Config
 # --------------------------------------------------------------------------
-DATA_PATH = Path("/kaggle/input/datasets/arikmitra/gigacorp-faq-final/gigacorp_faq_final.txt")
+DATA_PATH = Path("GigaCorp-Logistics-RAG-Support-Agent/data/gigacorp_faq_final.txt")
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"  # free, local, no API key needed
 LLM_MODEL = "gemini-3.5-flash"  # free-tier Gemini model
 TOP_K = 4
