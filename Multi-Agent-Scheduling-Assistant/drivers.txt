@@ -1,0 +1,4 @@
+Alex Rivera|alex.rivera@fastfreight.example
+Priya Nair|priya.nair@bluelinelogistics.example
+Tom Becker|tom.becker@meridiantransport.example
+Sam Okafor|sam.okafor@coastalhaulage.example

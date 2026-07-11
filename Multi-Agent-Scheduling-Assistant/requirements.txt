@@ -1,0 +1,27 @@
+# Pinned, mutually-compatible dependency set for Streamlit Community Cloud.
+#
+# Streamlit Cloud builds a fresh venv from this file on every deploy/reboot -
+# there is no persistent environment to accumulate drift in, but there's
+# also no chance to "pip install --upgrade" at runtime the way the old
+# Kaggle launcher did. Everything the app needs must be listed here, pinned
+# tightly enough that pip's resolver can't reproduce the
+# "ImportError: cannot import name 'model_json_schema'" mismatch (that
+# happened when langchain-google-genai 4.x was installed against an older,
+# already-present langchain-core that didn't have model_json_schema yet).
+#
+# Version floor/ceilings below are chosen to move together as a compatible
+# set. Bump them together, not individually, if you upgrade.
+
+streamlit>=1.38,<2.0
+
+# LangChain core stack - keep these three in lockstep.
+langchain-core>=1.2.5,<2.0.0
+langchain-google-genai>=4.0.0,<5.0.0
+langgraph>=0.2.0,<2.0.0
+
+# Separate package from core langgraph; required for
+# `from langgraph.checkpoint.sqlite import SqliteSaver` used in graph.py.
+langgraph-checkpoint-sqlite>=2.0.0,<4.0.0
+
+pydantic>=2,<3
+requests>=2.31,<3
