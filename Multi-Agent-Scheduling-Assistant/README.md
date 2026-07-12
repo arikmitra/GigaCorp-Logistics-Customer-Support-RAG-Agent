@@ -48,7 +48,17 @@ app a public URL.)
    `WEBHOOK_URL` is optional — see [Pipedream setup](#pipedream-webhook-setup-optional)
    below. Without it, booking notifications are simulated (logged) instead
    of actually sent.
-4. Deploy (or reboot, if you added secrets after the first deploy). Streamlit
+
+   > **GitHub repo secrets are not the same thing.** If `GOOGLE_API_KEY`
+   > and `WEBHOOK_URL` are stored as GitHub repo secrets (Settings →
+   > Secrets and variables → Actions), that only makes them available to
+   > GitHub Actions workflows in this repo — Streamlit Community Cloud has
+   > no access to them and this app will not start without a
+   > `GOOGLE_API_KEY`. Copy the *same values* into the app's own
+   > Settings → Secrets box on share.streamlit.io as shown above; that's
+   > the only place Streamlit Cloud reads app secrets from.
+   
+5. Deploy (or reboot, if you added secrets after the first deploy). Streamlit
    Cloud installs everything from `requirements.txt` into a fresh
    environment automatically — no manual pip steps needed.
 
@@ -112,6 +122,28 @@ console/logs instead — the demo still works end-to-end.
    (`steps.trigger.event.body.to` and `...body.message`).
 5. Deploy the workflow. Every booking confirmation this app sends now shows
    up wherever step 4 routes it.
+
+## Troubleshooting: `401 UNAUTHENTICATED ... ACCESS_TOKEN_TYPE_UNSUPPORTED`
+
+If the app raises this error when calling Gemini even though `GOOGLE_API_KEY`
+is correctly set, it's almost always one of two things:
+
+1. **Known `langchain-google-genai` 4.x quirk.** That version wraps
+   Google's newer unified `google-genai` SDK, which in some hosting
+   environments tries to authenticate via gRPC/Application Default
+   Credentials instead of using the supplied API key, even when the key is
+   passed explicitly. `graph.py`'s `get_llm()` already works around this by
+   forcing `transport="rest"` on `ChatGoogleGenerativeAI`. If you've removed
+   or changed that line, put it back - see
+   [langchain-ai/langchain-google#1271](https://github.com/langchain-ai/langchain-google/issues/1271).
+2. **`AQ.`-prefixed API keys.** Some newer Google AI Studio keys (prefixed
+   `AQ.` instead of the older `AIza...`) have been reported to fail against
+   `generativelanguage.googleapis.com` with this exact error regardless of
+   client configuration. If step 1 doesn't fix it, try generating a fresh
+   key at <https://aistudio.google.com/apikey> and confirm its prefix; if
+   it's still failing, check the [Gemini API developer
+   forum](https://discuss.ai.google.dev/) for the current status of that
+   issue.
 
 ## Dependency notes
 
