@@ -1,3 +1,5 @@
+Check app here - https://gigacorp-logistics-customer-support-rag-agent-7vygynfutjgdgkau.streamlit.app/
+
 # GigaCorp Customer Support RAG Agent
 
 A Streamlit chat app that answers customer questions about a fictional
