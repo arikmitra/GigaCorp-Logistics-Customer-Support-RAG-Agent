@@ -1,3 +1,5 @@
+Check app here - https://gigacorp-logistics-customer-support-rag-agent-dpkrkpbits9pme5h.streamlit.app/?thread_id=5723410f&mode=appointment
+
 # Multi-Agent Scheduling Assistant
 
 A LangGraph multi-agent scheduling assistant with a Streamlit front end, in
