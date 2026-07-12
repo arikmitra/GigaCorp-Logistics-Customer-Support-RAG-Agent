@@ -82,6 +82,16 @@ def get_llm(temperature=0):
     secrets itself (no Kaggle/other secret-manager coupling) - whatever
     process starts the app (app.py, a notebook cell, a test) is responsible
     for exporting GOOGLE_API_KEY before this is called.
+
+    `transport="rest"` is required here, not cosmetic. langchain-google-genai
+    4.x wraps Google's newer unified `google-genai` SDK, which - in some
+    hosting environments (Streamlit Community Cloud among them) - tries to
+    go through its gRPC/Application-Default-Credentials auth path even when
+    an API key is explicitly supplied, producing a confusing
+    "401 UNAUTHENTICATED ... ACCESS_TOKEN_TYPE_UNSUPPORTED" error instead of
+    actually using the key. Forcing the REST transport makes it use plain
+    API-key auth instead. See
+    https://github.com/langchain-ai/langchain-google/issues/1271
     """
     api_key = os.environ.get("GOOGLE_API_KEY")
     if not api_key:
@@ -90,7 +100,12 @@ def get_llm(temperature=0):
             "https://aistudio.google.com/apikey and export it, e.g.\n"
             "  export GOOGLE_API_KEY=your-key-here"
         )
-    return ChatGoogleGenerativeAI(model=LLM_MODEL, temperature=temperature, google_api_key=api_key)
+    return ChatGoogleGenerativeAI(
+        model=LLM_MODEL,
+        temperature=temperature,
+        google_api_key=api_key,
+        transport="rest",
+    )
 
 
 # --------------------------------------------------------------------------
