@@ -49,7 +49,7 @@ def _resolve_data_path() -> Path:
 
 DATA_PATH = _resolve_data_path()
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"  # free, local, no API key needed
-LLM_MODEL = "gemini-3.5-flash"  # free-tier Gemini model
+LLM_MODEL = "gemini-3.1-flash-lite"  # free-tier Gemini model
 TOP_K = 4
 
 
